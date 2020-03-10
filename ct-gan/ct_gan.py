@@ -50,12 +50,12 @@ def load_cifar10(img_size):
     return cifar
 
 # cifar = load_cifar10(opt.img_size)
-def load_pixelart(img_size, filename):
+def load_pixelart(filename):
     X = joblib.load(filename)['X'].astype(float) * 2 - 1
-    dataset = TensorDataset(torch.from_numpy(X), 
+    dataset = TensorDataset(torch.from_numpy(X))
     return dataset
 
-pixelart = load_pixelart(opt.img_size, opt.images_filename)
+pixelart = load_pixelart(opt.images_filename)
 batch_iterator = DataLoader(pixelart, shuffle=True, batch_size=opt.batch_size)
 
 cuda = torch.cuda.is_available()
