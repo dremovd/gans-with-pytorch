@@ -82,7 +82,7 @@ noise_fixed = Variable(Tensor(25, opt.latent_dim, 1, 1).normal_(0, 1), requires_
 
 for epoch in range(opt.n_epochs):
     print('Epoch {}'.format(epoch))
-    for i, batch in enumerate(batch_iterator):
+    for i, (batch, _) in enumerate(batch_iterator):
         # == Discriminator update == #
         for iter in range(opt.n_critic):
             # Sample real and fake images, using notation in paper.
