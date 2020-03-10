@@ -121,13 +121,13 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         self.model = nn.Sequential(                     # 128 x 1 x 1
-            nn.ConvTranspose2d(128, 128, 4, 1, 0),      # 128 x 4 x 4
-            ResidualBlock(128, 128, 3, resample='up'),  # 128 x 8 x 8
-            ResidualBlock(128, 128, 3, resample='up'),  # 128 x 16 x 16
-            ResidualBlock(128, 128, 3, resample='up'),  # 128 x 32 x 32
+            nn.ConvTranspose2d(128, 128, 6, 1, 0),      # 128 x 6 x 6
+            ResidualBlock(128, 128, 3, resample='up'),  # 128 x 12 x 12
+            ResidualBlock(128, 128, 3, resample='up'),  # 128 x 24 x 24
+            ResidualBlock(128, 128, 3, resample='up'),  # 128 x 48 x 48
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-            nn.Conv2d(128, 3, 3, padding=(3-1)//2),     # 3 x 32 x 32 (no kaiming init. here)
+            nn.Conv2d(128, 3, 3, padding=(3-1)//2),     # 3 x 48 x 48 (no kaiming init. here)
             nn.Tanh()
         )
 
@@ -141,24 +141,23 @@ class Discriminator(nn.Module):
         n_output = 128
         '''
         This is a parameter but since we experiment with a single size
-        of 3 x 32 x 32 images, it is hardcoded here.
+        of 3 x 48 x 48 images, it is hardcoded here.
         '''
 
-        self.DiscBlock1 = DiscBlock1(n_output)                      # 128 x 16 x 16
+        self.DiscBlock1 = DiscBlock1(n_output)                      # 128 x 24 x 24
         self.block1 = nn.Sequential(
-            ResidualBlock(n_output, n_output, 3, resample='down', bn=False, spatial_dim=16),  # 128 x 8 x 8
+            ResidualBlock(n_output, n_output, 3, resample='down', bn=False, spatial_dim=24),  # 128 x 12 x 12
         )
         self.block2 = nn.Sequential(
-            ResidualBlock(n_output, n_output, 3, resample=None, bn=False, spatial_dim=8),    # 128 x 8 x 8
+            ResidualBlock(n_output, n_output, 3, resample=None, bn=False, spatial_dim=12),    # 128 x 12 x 12
         )
         self.block3 = nn.Sequential(
-            ResidualBlock(n_output, n_output, 3, resample=None, bn=False, spatial_dim=8),    # 128 x 8 x 8
+            ResidualBlock(n_output, n_output, 3, resample=None, bn=False, spatial_dim=12),    # 128 x 12 x 12
         )
 
         self.l1 = nn.Sequential(nn.Linear(128, 1))                  # 128 x 1
 
     def forward(self, x, dropout=0.0, intermediate_output=False):
-        # x = x.view(-1, 3, 32, 32)
         y = self.DiscBlock1(x)
         y = self.block1(y)
         y = F.dropout(y, training=True, p=dropout)
