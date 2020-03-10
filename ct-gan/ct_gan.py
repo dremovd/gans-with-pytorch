@@ -1,12 +1,13 @@
 ''' Improving the Improved Training of Wasserstein GANs: A Consistency Term and Its Dual Effect '''
 import argparse
+import joblib
 
 import torch
 from torch import nn, optim
 from torch.autograd.variable import Variable
 
 from torchvision import transforms, datasets
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 from models import Discriminator, Generator
 
@@ -25,7 +26,8 @@ parser.add_argument('--latent_dim', type=int, default=128, help='number of input
 parser.add_argument('--channels', type=int, default=1, help='number of image channels')
 parser.add_argument('--display_port', type=int, default=8097, help='where to run the visdom for visualization? useful if running multiple visdom tabs')
 parser.add_argument('--display_server', type=str, default="http://localhost", help='visdom server of the web display')
-parser.add_argument('--sample_interval', type=int, default=256, help='interval betwen image samples')
+parser.add_argument('--sample_interval', type=int, default=256, help='interval between image samples')
+parser.add_argument('--images_filename', type=str, default="dataset/pixelart-48x48.dump", help='images dump filename')
 opt = parser.parse_args()
 
 try:
@@ -47,8 +49,20 @@ def load_cifar10(img_size):
                              transform=compose)
     return cifar
 
-cifar = load_cifar10(opt.img_size)
-batch_iterator = DataLoader(cifar, shuffle=True, batch_size=opt.batch_size) # List, NCHW format.
+# cifar = load_cifar10(opt.img_size)
+def load_pixelart(img_size, filename):
+    compose = transforms.Compose(
+        [transforms.Resize(img_size),
+         transforms.ToTensor(),
+         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+         ])
+    
+    X = joblib.load(filename)['X']
+    dataset = torch.from_numpy(X)
+    return dataset
+
+pixelart = load_pixelart(opt.img_size, opt.images_filename)
+batch_iterator = DataLoader(pixelart, shuffle=True, batch_size=opt.batch_size)
 
 cuda = torch.cuda.is_available()
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
