@@ -7,7 +7,7 @@ from torch import nn, optim
 from torch.autograd.variable import Variable
 
 from torchvision import transforms, datasets
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, TensorDataset
 
 from models import Discriminator, Generator
 
@@ -51,14 +51,8 @@ def load_cifar10(img_size):
 
 # cifar = load_cifar10(opt.img_size)
 def load_pixelart(img_size, filename):
-    compose = transforms.Compose(
-        [transforms.Resize(img_size),
-         transforms.ToTensor(),
-         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-         ])
-    
-    X = joblib.load(filename)['X']
-    dataset = torch.from_numpy(X)
+    X = joblib.load(filename)['X'].astype(float) * 2 - 1
+    dataset = TensorDataset(torch.from_numpy(X), 
     return dataset
 
 pixelart = load_pixelart(opt.img_size, opt.images_filename)
