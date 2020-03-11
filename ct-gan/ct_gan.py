@@ -80,7 +80,7 @@ if cuda:
     generator = generator.cuda()
     discriminator = discriminator.cuda()
 
-images_count = arg.images_count
+images_count = opt.images_count
 noise_fixed = Variable(Tensor(images_count, opt.latent_dim, 1, 1).normal_(0, 1), requires_grad=False) # To track the progress of the GAN.
 batches_done = 0
 for epoch in range(opt.n_epochs):
