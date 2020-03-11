@@ -2,6 +2,7 @@
 import argparse
 import joblib
 import matplotlib.pyplot as plt
+import numpy as np
 
 import torch
 from torch import nn, optim
@@ -146,6 +147,8 @@ for epoch in range(opt.n_epochs):
         if batches_done % opt.sample_interval == 1:
             imgs_fake_fixed = generator(noise_fixed).detach().data
             imgs_fake_fixed = imgs_fake_fixed.add_(1).div_(2).cpu().numpy()
+            imgs_fake_fixed = np.moveaxis(imgs_fake_fixed, -1, 1)
+
             print(imgs_fake_fixed.shape)
             for image_index in range(images_count):
                 plt.imsave(
