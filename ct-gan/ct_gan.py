@@ -147,7 +147,7 @@ for epoch in range(opt.n_epochs):
             print(imgs_fake_fixed.shape)
             for image_index in range(images_count):
                 matplotlib.pyplot.imsave(
-                    'generated-{}-{}.png'.format(batches_done, image_index), imgs_fake_fixed[image_index, :, :, :]
+                    'generated-{}-{}.png'.format(batches_done, image_index), imgs_fake_fixed[image_index, :, :, :],
                     vmin=0., vmax=1.
                 )
 
