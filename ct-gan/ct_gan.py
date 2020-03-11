@@ -80,11 +80,12 @@ if cuda:
     discriminator = discriminator.cuda()
 
 noise_fixed = Variable(Tensor(25, opt.latent_dim, 1, 1).normal_(0, 1), requires_grad=False) # To track the progress of the GAN.
-
+batches_done = 0
 for epoch in range(opt.n_epochs):
     print('Epoch {}'.format(epoch))
     for i, batch in enumerate(batch_iterator):
         batch = batch[0]
+        batches_done += 1
         # == Discriminator update == #
         for iter in range(opt.n_critic):
             # Sample real and fake images, using notation in paper.
@@ -143,6 +144,7 @@ for epoch in range(opt.n_epochs):
         if batches_done % opt.sample_interval == 0:
             imgs_fake_fixed = generator(noise_fixed).detach().data
             imgs_fake_fixed = imgs_fake_fixed.add_(1).div_(2).cpu().numpy()
+            print(imgs_fake_fixed.shape)
             matplotlib.image.imsave('generated-{}.png'.format(batches_done), imgs_fake_fixed)
 
         if vis:
