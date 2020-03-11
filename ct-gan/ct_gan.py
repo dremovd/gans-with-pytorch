@@ -1,7 +1,7 @@
 ''' Improving the Improved Training of Wasserstein GANs: A Consistency Term and Its Dual Effect '''
 import argparse
 import joblib
-import matplotlib
+import matplotlib.pyplot as plt
 
 import torch
 from torch import nn, optim
@@ -148,7 +148,7 @@ for epoch in range(opt.n_epochs):
             imgs_fake_fixed = imgs_fake_fixed.add_(1).div_(2).cpu().numpy()
             print(imgs_fake_fixed.shape)
             for image_index in range(images_count):
-                matplotlib.pyplot.imsave(
+                plt.imsave(
                     'generated-{}-{}.png'.format(batches_done, image_index), imgs_fake_fixed[image_index, :, :, :],
                     vmin=0., vmax=1.
                 )
