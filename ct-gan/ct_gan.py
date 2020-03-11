@@ -29,6 +29,7 @@ parser.add_argument('--display_port', type=int, default=8097, help='where to run
 parser.add_argument('--display_server', type=str, default="http://localhost", help='visdom server of the web display')
 parser.add_argument('--sample_interval', type=int, default=256, help='interval between image samples')
 parser.add_argument('--images_filename', type=str, default="dataset/pixelart-48x48.dump", help='images dump filename')
+parser.add_argument('--images_count', type=int, default=25, help='images count')
 opt = parser.parse_args()
 
 try:
@@ -79,7 +80,8 @@ if cuda:
     generator = generator.cuda()
     discriminator = discriminator.cuda()
 
-noise_fixed = Variable(Tensor(25, opt.latent_dim, 1, 1).normal_(0, 1), requires_grad=False) # To track the progress of the GAN.
+images_count = arg.images_count
+noise_fixed = Variable(Tensor(images_count, opt.latent_dim, 1, 1).normal_(0, 1), requires_grad=False) # To track the progress of the GAN.
 batches_done = 0
 for epoch in range(opt.n_epochs):
     print('Epoch {}'.format(epoch))
