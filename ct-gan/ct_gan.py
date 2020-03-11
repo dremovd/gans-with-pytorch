@@ -141,7 +141,7 @@ for epoch in range(opt.n_epochs):
 
         g_loss.backward()
         optimizer_G.step()
-        if batches_done % opt.sample_interval == 0:
+        if batches_done % opt.sample_interval == 1:
             imgs_fake_fixed = generator(noise_fixed).detach().data
             imgs_fake_fixed = imgs_fake_fixed.add_(1).div_(2).cpu().numpy()
             print(imgs_fake_fixed.shape)
